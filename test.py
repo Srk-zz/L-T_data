@@ -1,3 +1,5 @@
+# for annotating the image
+
 import os
 import json
 import cv2
