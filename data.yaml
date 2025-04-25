@@ -1,0 +1,29 @@
+path: .  # This means "current directory" where the YAML file is
+
+
+
+train: images/train
+
+val: images/val
+
+
+
+nc: 7
+
+names: [
+
+  "Dumper,20mmdown",
+
+  "Dumper,5mmdowndust",
+
+  "Dumper,75mmdown",
+
+  "Dumper,empty",
+
+  "Tipper,5mmdowndust",
+
+  "Tipper,empty",
+
+  "Trailer,empty"
+
+]
