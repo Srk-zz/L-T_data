@@ -1,3 +1,6 @@
+#for data extraction from the video
+
+
 import os
 import glob
 import json
