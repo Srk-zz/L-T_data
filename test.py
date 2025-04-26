@@ -1,5 +1,3 @@
-# for annotating the image
-
 import os
 import json
 import cv2
@@ -34,19 +32,29 @@ def extract_timestamp_from_filename(filename):
         print(f"Error parsing timestamp from {filename}: {e}")
     return None
 
+
 def find_json_entry(timestamp, json_data):
     for entry in json_data:
         try:
-            json_ts = datetime.strptime(entry["Transaction DateTime"], DATE_FMT_JSON)
+            json_ts = datetime.strptime(entry.get("Transaction DateTime", ""), DATE_FMT_JSON)
             if json_ts == timestamp:
                 return entry
         except:
             continue
     return None
 
+
 def extract_material_suffix(material):
+    # If material field is missing or empty
+    if material is None:
+        return "no_data"
+    # If SIZE :- is present, extract suffix
     if "SIZE :-" in material:
-        return material.split("SIZE :-")[-1].strip().replace(" ", "").replace(";", "").replace("(", "").replace(")", "").replace(":", "").replace(",", "").replace("_", "").replace("&", "").lower()
+        suffix = material.split("SIZE :-")[-1]
+        # Clean and normalize
+        return suffix.strip().replace(" ", "").replace(";", "").replace("(", "").replace(")", "")\
+                       .replace(":", "").replace(",", "").replace("_", "").replace("&", "").lower()
+    # Material present but no size info
     return "empty"
 
 # ─── ANNOTATION GENERATION ─────────────────────────────────────────
@@ -72,10 +80,11 @@ def main():
             print(f"⚠️ No matching JSON entry for {img_name}")
             continue
 
-        vehicle_type = json_entry.get("Vehicle Type", "unknown").strip()
-        material = json_entry.get("Material", "").strip() or "empty"
+        raw_material = json_entry.get("Material")
+        material = raw_material.strip() if raw_material and raw_material.strip() else None
         material_suffix = extract_material_suffix(material)
 
+        vehicle_type = json_entry.get("Vehicle Type", "unknown").strip()
         label_class = f"{vehicle_type},{material_suffix}"
         all_classes.add(label_class)
 
